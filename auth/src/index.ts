@@ -19,7 +19,6 @@ app.use(currentUserRouter);
 app.use(signOutRouter);
 
 app.all("*", async () => {
-  console.log("Not Found");
   throw new NotFoundError();
 });
 
@@ -28,7 +27,7 @@ app.use(errorHandler);
 const start = async () => {
   try {
     await mongoose.connect("mongodb://auth-mongo-srv:27017/auth");
-    console.log("Connected to Mongo");
+   
   } catch (err) {
     console.log("Mongo Connection Error");
   }
