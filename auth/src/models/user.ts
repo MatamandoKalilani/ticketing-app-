@@ -19,17 +19,29 @@ interface UserDoc extends mongoose.Document {
 }
 
 // Overall Schema of a User
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-  },
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+    },
 
-  password: {
-    type: String,
-    required: true,
+    password: {
+      type: String,
+      required: true,
+    },
   },
-});
+  {
+    toJSON: {
+      transform(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.__v;
+      },
+    },
+  }
+);
 
 // Hashing Passwords before we save them
 userSchema.pre("save", async function (done) {

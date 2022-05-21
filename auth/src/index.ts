@@ -1,36 +1,19 @@
-import express from "express";
-import "express-async-errors";
+import { app } from "./app";
 import mongoose from "mongoose";
 
-import { currentUserRouter } from "./routes/current-user";
-import { signInRouter } from "./routes/sign-in";
-import { signOutRouter } from "./routes/sign-out";
-import { signUpRouter } from "./routes/sign-up";
-import { errorHandler } from "./middlewares/error-handler";
-import { NotFoundError } from "./errors/not-found-error";
-
-const app = express();
 const port = 3000;
-app.use(express.json());
-
-app.use(signUpRouter);
-app.use(signInRouter);
-app.use(currentUserRouter);
-app.use(signOutRouter);
-
-app.all("*", async () => {
-  throw new NotFoundError();
-});
-
-app.use(errorHandler);
 
 const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw Error("JWT_KEY not defined");
+  }
+
   try {
     await mongoose.connect("mongodb://auth-mongo-srv:27017/auth");
-   
   } catch (err) {
     console.log("Mongo Connection Error");
   }
+  
   app.listen(port, () => {
     console.log("Auth Service Listening at Port: " + port);
   });
