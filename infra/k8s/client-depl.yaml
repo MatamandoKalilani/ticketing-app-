@@ -1,44 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: client-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: client
   template:
     metadata:
       labels:
-        app: auth
+        app: client
     spec:
       containers:
-        - name: auth
-          image: us.gcr.io/robotic-century-351110/auth
+        - name: client
+          image: us.gcr.io/robotic-century-351110/client
           resources:
             limits:
               memory: "1Gi"
-              cpu: "500m"
+              cpu: "1024m"
             requests:
               memory: "1Gi"
-              cpu: "500m"
-          env:
-            - name: JWT_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: jwt-secret
-                  key: JWT_KEY
+              cpu: "1024m"
+
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-srv
+  name: client-srv
 spec:
   selector:
-    app: auth
+    app: client
   ports:
-    - name: auth
+    - name: client
       protocol: TCP
       port: 3000
       targetPort: 3000

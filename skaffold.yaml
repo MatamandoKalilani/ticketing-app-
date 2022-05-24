@@ -5,16 +5,26 @@ deploy:
     manifests:
       - ./infra/k8s/*
 build:
-  local:
-    push: false
-  # googleCloudBuild:
-  #   projectId: ticketing-app-350112 
+  # local:
+  #   push: false
+  googleCloudBuild:
+    projectId: robotic-century-351110
   artifacts:
-    - image: codethedream/auth
+    - image: us.gcr.io/robotic-century-351110/auth
       context: auth
       docker:
         dockerfile: Dockerfile
       sync:
         manual:
           - src: "src/**/*.ts"
+            dest: .
+    - image: us.gcr.io/robotic-century-351110/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.ts"
+            dest: .
+          - src: "**/*.tsx"
             dest: .
