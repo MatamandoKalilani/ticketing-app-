@@ -9,7 +9,7 @@ const start = async () => {
   }
 
   if (!process.env.MONGO_URI) {
-    throw Error("MONGO_URI Needed!");
+    throw Error("Mongo URI Needed!");
   }
 
   try {
@@ -19,7 +19,7 @@ const start = async () => {
   }
 
   app.listen(port, () => {
-    console.log("Auth Service Listening at Port : " + port);
+    console.log("Tickets Service Listening at Port : " + port);
   });
 };
 

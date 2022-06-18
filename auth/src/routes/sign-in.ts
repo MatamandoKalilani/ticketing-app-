@@ -1,8 +1,7 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
-import { validateRequest } from "../middlewares/validate-request";
+import { validateRequest, BadRequestError } from "@mata-ticketing/common";
 import { User } from "../models/user";
-import { BadRequestError } from "../errors/bad-request-error";
 import { Password as PasswordManager } from "../services/password";
 import jwt from "jsonwebtoken";
 
@@ -27,7 +26,6 @@ router.post(
       existingUser.password,
       password
     );
-
 
     if (!passwordsMatch) {
       throw new BadRequestError("Invalid credentials");

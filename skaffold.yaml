@@ -5,12 +5,13 @@ deploy:
     manifests:
       - ./infra/k8s/*
 build:
-  # local:
-  #   push: false
-  googleCloudBuild:
-    projectId: robotic-century-351110
+  local:
+    push: false
+  # googleCloudBuild:
+  #   projectId: robotic-century-351110
   artifacts:
-    - image: us.gcr.io/robotic-century-351110/auth
+    # - image: us.gcr.io/robotic-century-351110/auth
+    - image: codethedream/auth
       context: auth
       docker:
         dockerfile: Dockerfile
@@ -18,7 +19,8 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
-    - image: us.gcr.io/robotic-century-351110/client
+    # - image: us.gcr.io/robotic-century-351110/client
+    - image: codethedream/client
       context: client
       docker:
         dockerfile: Dockerfile
@@ -27,4 +29,12 @@ build:
           - src: "**/*.ts"
             dest: .
           - src: "**/*.tsx"
+            dest: .
+    - image: codethedream/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
             dest: .

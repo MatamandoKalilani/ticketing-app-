@@ -14,14 +14,15 @@ spec:
     spec:
       containers:
         - name: client
-          image: us.gcr.io/robotic-century-351110/client
-          resources:
-            limits:
-              memory: "1Gi"
-              cpu: "1024m"
-            requests:
-              memory: "1Gi"
-              cpu: "1024m"
+          # image: us.gcr.io/robotic-century-351110/client
+          image: codethedream/client
+          # resources:
+          #   limits:
+          #     memory: "1Gi"
+          #     cpu: "1024m"
+          #   requests:
+          #     memory: "1Gi"
+          #     cpu: "1024m"
 
 
 ---
