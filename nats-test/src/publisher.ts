@@ -1,21 +1,35 @@
 import nats from "node-nats-streaming";
+import { randomBytes } from "crypto";
+import { TicketCreatedPublisher } from "./events/ticket-created-publisher";
 
 console.clear();
 
-const stan = nats.connect("ticketing", "abc", {
-  url: "http://localhost:4222",
-});
+const stan = nats.connect(
+  "ticketing",
+  `publisher_${randomBytes(4).toString("hex")}`,
+  {
+    url: "http://localhost:4222",
+  }
+);
 
-stan.on("connect", () => {
+stan.on("connect", async () => {
   console.log("Publisher connected to NATS");
 
-  const data = JSON.stringify({
-    id: "23432",
-    title: "concert",
-    price: 20,
-  });
+  const publisher = new TicketCreatedPublisher(stan);
 
-  stan.publish("ticket:created", data, () => {
-    console.log("Message Published");
+  try {
+    await publisher.publish({ id: "23432", title: "concert", price: 20 });
+  } catch (err) {
+    console.error(err);
+  }
+
+  stan.on("close", () => {
+    console.log("Nats connection closed");
+    process.exit();
   });
 });
+
+process.on("SIGINT", () => stan.close());
+process.on("SIGTERM", () => stan.close());
+
+// --------------
