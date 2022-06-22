@@ -8,6 +8,9 @@ import {
   validateRequest,
 } from "@mata-ticketing/common";
 
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
+import { natsWrapper } from "../nats-wrapper";
+
 const router = express.Router();
 
 router.put(
@@ -40,6 +43,13 @@ router.put(
     });
 
     await ticket.save();
+
+    new TicketUpdatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
     
     res.status(200);
     res.send(ticket);
