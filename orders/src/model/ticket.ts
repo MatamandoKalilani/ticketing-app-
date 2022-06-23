@@ -1,19 +1,20 @@
 import mongoose from "mongoose";
+import { Order, OrderStatus } from "./order";
 import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // Properties for when i am creating a ticket
 interface TicketAttrs {
+  id: string;
   title: string;
   price: number;
-  userId: string;
 }
 
 // Properties to properly define the ticket document mongoose actually creates
 interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
-  userId: string;
   version: number;
+  isReserved(): Promise<boolean>;
 }
 
 // Properties to describe a Ticket Model
@@ -33,10 +34,6 @@ const ticketSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    userId: {
-      type: String,
-      required: true,
-    },
   },
   {
     toJSON: {
@@ -53,9 +50,29 @@ ticketSchema.plugin(updateIfCurrentPlugin);
 
 // Build function used to create a ticket (Allows for type checking when creating a ticket).
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
-  return new Ticket(attrs);
+  return new Ticket({
+    _id: attrs.id,
+    title: attrs.title,
+    price: attrs.price,
+  });
+};
+
+// Build function used to create a ticket (Allows for type checking when creating a ticket).
+ticketSchema.methods.isReserved = async function (): Promise<boolean> {
+  const existingOrder = await Order.findOne({
+    ticket: this as any,
+    status: {
+      $in: [
+        OrderStatus.Created,
+        OrderStatus.AwaitingPayment,
+        OrderStatus.Complete,
+      ],
+    },
+  });
+
+  return existingOrder ? true : false;
 };
 
 const Ticket = mongoose.model<TicketDoc, TicketModel>("Ticket", ticketSchema);
 
-export { Ticket };
+export { Ticket, TicketDoc };

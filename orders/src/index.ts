@@ -1,6 +1,8 @@
 import { app } from "./app";
 import mongoose from "mongoose";
 import { natsWrapper } from "./nats-wrapper";
+import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
+import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 
 const port = 3000;
 
@@ -40,13 +42,17 @@ const start = async () => {
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
 
+    //Listeners
+    new TicketCreatedListener(natsWrapper.client).listen();
+    new TicketUpdatedListener(natsWrapper.client).listen();
+
     await mongoose.connect(process.env.MONGO_URI);
   } catch (err) {
     console.log("Mongo Connection Error");
   }
 
   app.listen(port, () => {
-    console.log("Tickets Service Listening at Port : " + port);
+    console.log("Orders Service Listening at Port : " + port);
   });
 };
 

@@ -30,8 +30,9 @@ router.post(
     new TicketCreatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
       title: ticket.title,
-      price:ticket.price,
+      price: ticket.price,
       userId: ticket.userId,
+      version: ticket.version
     });
 
     res.status(201).send(ticket);
