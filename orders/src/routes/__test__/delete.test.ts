@@ -1,4 +1,5 @@
 import { OrderStatus } from "@mata-ticketing/common";
+import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../model/ticket";
@@ -7,6 +8,7 @@ import { natsWrapper } from "../../nats-wrapper";
 it("an order can be cancelled", async () => {
   // Build Ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Success Tree",
     price: 2200,
   });
@@ -55,6 +57,7 @@ it("request must only accept a valid order id", async () => {
 it("Emits an order cancelled event", async () => {
   // Make a Ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Success Tree",
     price: 2200,
   });

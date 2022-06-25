@@ -1,4 +1,5 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 import { OrderStatus } from "@mata-ticketing/common";
 import { TicketDoc } from "./ticket";
 
@@ -54,6 +55,9 @@ const orderSchema = new mongoose.Schema(
     },
   }
 );
+
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 
 // Build function used to create an Order (Allows for type checking when creating an order).
 orderSchema.statics.build = (attrs: OrderAttrs) => {

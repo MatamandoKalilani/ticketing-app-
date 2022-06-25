@@ -20,6 +20,10 @@ interface TicketDoc extends mongoose.Document {
 // Properties to describe a Ticket Model
 interface TicketModel extends mongoose.Model<TicketDoc> {
   build(attrs: TicketAttrs): TicketDoc;
+  findByEvent(event: {
+    id: string;
+    version: number;
+  }): Promise<TicketDoc | null>;
 }
 
 // Overall Schema of a Ticket
@@ -55,6 +59,10 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
     title: attrs.title,
     price: attrs.price,
   });
+};
+
+ticketSchema.statics.findByEvent = (event: { id: string; version: number }) => {
+  return Ticket.findOne({ _id: event.id, version: event.version - 1 });
 };
 
 // Build function used to create a ticket (Allows for type checking when creating a ticket).

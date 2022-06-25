@@ -6,6 +6,7 @@ import { Ticket } from "../../model/ticket";
 
 const createTicket = async () => {
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Success Tree",
     price: 2200,
   });

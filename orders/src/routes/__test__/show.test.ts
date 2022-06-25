@@ -1,10 +1,12 @@
 import request from "supertest";
+import mongoose from "mongoose";
 import { app } from "../../app";
 import { Ticket } from "../../model/ticket";
 
 it("fetches the order", async () => {
   // Build Ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Success Tree",
     price: 2200,
   });
@@ -33,6 +35,7 @@ it("fetches the order", async () => {
 it("A user can only fetch an order they have created", async () => {
   // Build Ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Success Tree",
     price: 2200,
   });
@@ -58,10 +61,9 @@ it("A user can only fetch an order they have created", async () => {
 
 it("request must only accept a valid order id", async () => {
   //Make request to fetch order with in valid order id
-   await request(app)
+  await request(app)
     .get(`/api/orders/dgfdfgffdgfdgf`)
     .set("Cookie", global.signUp())
     .send()
     .expect(400);
-
 });
