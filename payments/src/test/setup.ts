@@ -5,7 +5,7 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 
 declare global {
-  var signUp: () => string[];
+  var signUp: (id?: string) => string[];
 }
 
 let mongo: any;
@@ -34,11 +34,11 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.signUp = () => {
+global.signUp = (id?: string) => {
   // build the JWT Payload
 
   const payload = {
-    id: new mongoose.Types.ObjectId().toHexString(),
+    id: id || new mongoose.Types.ObjectId().toHexString(),
     email: "test@test.com",
   };
 
