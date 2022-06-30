@@ -18,7 +18,9 @@ const MyApp = ({ Component, pageProps, currentUser }: MyAppProps) => {
   return (
     <div>
       <Header currentUser={currentUser} />
-      <Component {...pageProps} />
+      <div className="container">
+        <Component currentUser={currentUser} {...pageProps} />
+      </div>
     </div>
   );
 };
@@ -27,13 +29,15 @@ MyApp.getInitialProps = async ({
   ctx,
   Component,
 }: AppContext): Promise<Partial<MyAppProps>> => {
-  const { data } = await buildClient(ctx).get("/api/users/current-user");
+  const client = buildClient(ctx);
+  const { data } = await client.get("/api/users/current-user");
   const currentUser: CurrentUser = data.currentUser;
 
   let pageProps = {};
 
   if (Component.getInitialProps) {
-    pageProps = await Component.getInitialProps(ctx);
+    //@ts-ignore
+    pageProps = await Component.getInitialProps(ctx, client, currentUser);
   }
 
   return { currentUser, pageProps };

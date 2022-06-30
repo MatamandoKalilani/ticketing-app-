@@ -13,7 +13,7 @@ router.post(
     body("title").not().isEmpty().withMessage("title is required"),
     body("price")
       .isFloat({ gt: 0 })
-      .withMessage("trice must be greater than 0"),
+      .withMessage("price must be greater than 0"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
