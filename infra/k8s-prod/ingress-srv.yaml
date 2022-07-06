@@ -69,7 +69,7 @@ spec:
     - name: http
       port: 80
       protocol: TCP
-      targetPort: https
+      targetPort: http
     - name: https
       port: 443
       protocol: TCP
