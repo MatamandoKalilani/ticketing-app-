@@ -9,7 +9,7 @@ import { PaymentCreatedListener } from "./events/listeners/payment-created-liste
 const port = 3000;
 
 const start = async () => {
-  console.log("Starting....");
+  console.log("Starting...1.2.3");
   if (!process.env.JWT_KEY) {
     throw Error("JWT_KEY not defined");
   }

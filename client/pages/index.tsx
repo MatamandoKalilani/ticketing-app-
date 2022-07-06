@@ -17,7 +17,7 @@ const Home: NextPage<HomeProps> = ({ currentUser, tickets }: HomeProps) => {
   return currentUser ? (
     <div>
       {/* <h2>You are signed in as {currentUser.email}</h2> */}
-      <h1>Tickets</h1>
+      <h1>Tickets Home</h1>
       <table className="table">
         <thead>
           <tr>
