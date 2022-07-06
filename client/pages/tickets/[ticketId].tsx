@@ -10,14 +10,20 @@ const TicketShow = ({ ticket }) => {
     body: {
       ticketId: ticket.id,
     },
-    onSuccess: (order) => console.log(order),
+    onSuccess: (order) =>
+      Router.push("/orders/[orderId]", `/orders/${order.id}`),
   });
   return (
     <div>
       <h1>{ticket.title}</h1>
       <h4>Price: ${ticket.price}</h4>
       {errors && errors.length > 0 && <ErrorBox errors={errors} />}
-      <button onClick={doRequest} className="btn btn-primary">
+      <button
+        onClick={() => {
+          doRequest();
+        }}
+        className="btn btn-primary"
+      >
         Purchase
       </button>
     </div>

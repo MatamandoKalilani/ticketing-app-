@@ -19,11 +19,23 @@ const Header = ({ currentUser }: HeaderProps) => {
       <div className="d-flex justify-content-end">
         <ul className="nav d-flex align-items-center">
           {currentUser ? (
-            <li className="nav-item">
-              <Link href="/auth/signout">
-                <a className="navbar-link">Sign Out</a>
-              </Link>
-            </li>
+            <>
+              <li className="nav-item">
+                <Link href="/tickets/new">
+                  <a className="nav-link">Sell Tickets</a>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link href="/orders">
+                  <a className="nav-link">My Orders</a>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link href="/auth/signout">
+                  <a className="nav-link">Sign Out</a>
+                </Link>
+              </li>
+            </>
           ) : (
             <>
               <li className="nav-item">
