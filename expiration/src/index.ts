@@ -3,6 +3,7 @@ import { OrderCreatedListener } from "./events/listeners/order-created-listener"
 const port = 3000;
 
 const start = async () => {
+  console.log("Starting...1.2.3");
   if (!process.env.NATS_CLIENT_ID) {
     throw Error("NATS_CLIENT_ID Needed!");
   }

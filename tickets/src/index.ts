@@ -7,6 +7,7 @@ import { OrderCancelledListener } from "./events/listeners/order-cancelled-liste
 const port = 3000;
 
 const start = async () => {
+  console.log("Starting...1.2.3");
   if (!process.env.JWT_KEY) {
     throw Error("JWT_KEY not defined");
   }
@@ -44,7 +45,7 @@ const start = async () => {
 
     new OrderCreatedListener(natsWrapper.client).listen();
     new OrderCancelledListener(natsWrapper.client).listen();
-    
+
     await mongoose.connect(process.env.MONGO_URI);
   } catch (err) {
     console.log("Mongo Connection Error");
