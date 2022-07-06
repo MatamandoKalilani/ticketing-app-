@@ -7,7 +7,7 @@ import { isServer } from "../tools/client-or-server";
 const buildClient = ({ req }: NextPageContext) => {
   return axios.create({
     baseURL: isServer()
-      ? "https://www.builtdifferent.dev/"
+      ? "http://157.245.17.29.nip.io/"
       : "/",
     headers: isServer() && req ? (req.headers as AxiosRequestHeaders) : {},
   });
