@@ -1,10 +1,10 @@
 import { app } from "./app";
 import mongoose from "mongoose";
-import { natsWrapper } from "./nats-wrapper";
 import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
 import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener";
 import { PaymentCreatedListener } from "./events/listeners/payment-created-listener";
+import KafkaWrapper from "@mata-ticketing/common/build/events/kafka-wrapper";
 
 const port = 3000;
 
@@ -18,38 +18,41 @@ const start = async () => {
     throw Error("Mongo URI Needed!");
   }
 
-  if (!process.env.NATS_CLIENT_ID) {
-    throw Error("NATS_CLIENT_ID Needed!");
+  if (!process.env.KAFKA_CLIENT_ID) {
+    throw Error("KAFKA_CLIENT_ID Needed!");
   }
 
-  if (!process.env.NATS_URL) {
-    throw Error("NATS_URL Needed!");
+  if (!process.env.KAFKA_BROKERS_SERVER) {
+    throw Error("KAFKA_BROKERS_SERVER Needed!");
   }
 
-  if (!process.env.NATS_CLUSTER_ID) {
-    throw Error("NATS_CLUSTER_ID Needed!");
+  if (!process.env.KAFKA_SASL_USERNAME) {
+    throw Error("KAFKA_SASL_USERNAME Needed!");
+  }
+
+  if (!process.env.KAFKA_SASL_PASSWORD) {
+    throw Error("KAFKA_SASL_USERNAME Needed!");
   }
 
   try {
-    await natsWrapper.connect(
-      process.env.NATS_CLUSTER_ID,
-      process.env.NATS_CLIENT_ID,
-      process.env.NATS_URL
-    );
+    const kafkaWrapper = KafkaWrapper.getInstance();
 
-    natsWrapper.client.on("close", () => {
-      console.log("Nats connection closed");
-      process.exit();
+    await kafkaWrapper.connect({
+      clientId: process.env.KAFKA_CLIENT_ID,
+      brokers: [process.env.KAFKA_BROKERS_SERVER],
+      sasl: {
+        username: process.env.KAFKA_SASL_USERNAME,
+        password: process.env.KAFKA_SASL_PASSWORD,
+        mechanism: "plain",
+      },
+      ssl: true,
     });
 
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM", () => natsWrapper.client.close());
-
     //Listeners
-    new TicketCreatedListener(natsWrapper.client).listen();
-    new TicketUpdatedListener(natsWrapper.client).listen();
-    new ExpirationCompleteListener(natsWrapper.client).listen();
-    new PaymentCreatedListener(natsWrapper.client).listen();
+    new TicketCreatedListener({ kafkaWrapper }).listen();
+    new TicketUpdatedListener({ kafkaWrapper }).listen();
+    new ExpirationCompleteListener({ kafkaWrapper }).listen();
+    new PaymentCreatedListener({ kafkaWrapper }).listen();
 
     await mongoose.connect(process.env.MONGO_URI);
   } catch (err) {

@@ -1,18 +1,18 @@
 import {
   Listener,
   PaymentCreatedEvent,
-  Subjects,
+  Topics,
   OrderStatus,
+  OnMessageArgs,
 } from "@mata-ticketing/common";
-import { Message } from "node-nats-streaming";
 import { Order } from "../../model/order";
-import { queueGroupName } from "./queue-group-name";
+import { consumerGroupId } from "./queue-group-name";
 
 export class PaymentCreatedListener extends Listener<PaymentCreatedEvent> {
-  subject: Subjects.PaymentCreated = Subjects.PaymentCreated;
-  queueGroupName = queueGroupName;
+  topic: Topics.PaymentCreated = Topics.PaymentCreated;
+  consumerGroupId = consumerGroupId;
 
-  async onMessage(data: PaymentCreatedEvent["data"], msg: Message) {
+  async onMessage({ data, topic }: OnMessageArgs<PaymentCreatedEvent>) {
     const order = await Order.findById(data.orderId);
 
     if (!order) {
@@ -24,7 +24,5 @@ export class PaymentCreatedListener extends Listener<PaymentCreatedEvent> {
     });
 
     await order.save();
-
-    msg.ack();
   }
 }

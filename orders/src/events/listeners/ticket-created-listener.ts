@@ -1,19 +1,21 @@
-import { Listener, TicketCreatedEvent, Subjects } from "@mata-ticketing/common";
-import { Message } from "node-nats-streaming";
+import {
+  Listener,
+  OnMessageArgs,
+  TicketCreatedEvent,
+  Topics,
+} from "@mata-ticketing/common";
 import { Ticket } from "../../model/ticket";
-import { queueGroupName } from "./queue-group-name";
+import { consumerGroupId } from "./queue-group-name";
 
 export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
-  readonly subject: Subjects.TicketCreated = Subjects.TicketCreated;
-  queueGroupName = queueGroupName;
+  readonly topic: Topics.TicketCreated = Topics.TicketCreated;
+  consumerGroupId = consumerGroupId;
 
-  async onMessage(data: TicketCreatedEvent["data"], msg: Message) {
+  async onMessage({ data }: OnMessageArgs<TicketCreatedEvent>) {
     const { id, title, price } = data;
 
     const ticket = Ticket.build({ id, title, price });
 
     await ticket.save();
-
-    msg.ack();
   }
 }

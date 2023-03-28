@@ -1,5 +1,5 @@
-import { Publisher, OrderCancelledEvent, Subjects } from "@mata-ticketing/common";
+import { Publisher, OrderCancelledEvent, Topics } from "@mata-ticketing/common";
 
 export class OrderCancelledPublisher extends Publisher<OrderCancelledEvent> {
-  subject: Subjects.OrderCancelled = Subjects.OrderCancelled;
+  topic: Topics.OrderCancelled = Topics.OrderCancelled;
 }

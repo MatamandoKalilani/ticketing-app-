@@ -1,19 +1,20 @@
 import {
   Listener,
   ExpirationCompleteEvent,
-  Subjects,
+  Topics,
   OrderStatus,
+  OnMessageArgs,
 } from "@mata-ticketing/common";
-import { Message } from "node-nats-streaming";
-import { queueGroupName } from "./queue-group-name";
+import { consumerGroupId } from "./queue-group-name";
 import { Order } from "../../model/order";
 import { OrderCancelledPublisher } from "../publishers/order-cancelled-publisher";
+import KafkaWrapper from "@mata-ticketing/common/build/events/kafka-wrapper";
 
 export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent> {
-  subject: Subjects.ExpirationComplete = Subjects.ExpirationComplete;
-  queueGroupName = queueGroupName;
+  topic: Topics.ExpirationComplete = Topics.ExpirationComplete;
+  consumerGroupId = consumerGroupId;
 
-  async onMessage(data: ExpirationCompleteEvent["data"], msg: Message) {
+  async onMessage({ data }: OnMessageArgs<ExpirationCompleteEvent>) {
     const order = await Order.findById(data.orderId).populate("ticket");
 
     if (!order) {
@@ -21,7 +22,7 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
     }
 
     if (order.status === OrderStatus.Complete) {
-      return msg.ack();
+      return;
     }
 
     order.set({
@@ -30,14 +31,14 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
 
     await order.save();
 
-    new OrderCancelledPublisher(this.client).publish({
+    new OrderCancelledPublisher({
+      kafkaWrapper: KafkaWrapper.getInstance(),
+    }).publish({
       id: order.id,
       version: order.version,
       ticket: {
         id: order.ticket.id,
       },
     });
-
-    msg.ack();
   }
 }
